@@ -30,6 +30,9 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // [GUIA - LÓGICA DE PLANO]:
+        // Aqui podes capturar o request('plan') para associar automaticamente o novo utilizador
+         // ao plano correspondente logo no momento do registo.
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],

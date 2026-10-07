@@ -12,6 +12,9 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+        // [GUIA - FRONT-END / LANDING PAGE]:
+        // As rotas de registo abaixo recebem os parâmetros enviados do Framer (ex: /register?plan=pro).
+        // Certifica-te de que o controlador de registo captura este parâmetro 'plan' na query string.
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
