@@ -12,7 +12,7 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/login');
+        $response = $this->withoutVite()->get('/login');
 
         $response->assertStatus(200);
     }
@@ -50,5 +50,29 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_users_can_authenticate_from_the_login_modal(): void
+    {
+        $user = User::factory()->create();
+
+        $this->postJson('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertOk()->assertJson(['redirect' => route('dashboard')]);
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_modal_login_returns_validation_errors_without_redirecting(): void
+    {
+        $user = User::factory()->create();
+
+        $this->postJson('/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ])->assertUnprocessable()->assertJsonValidationErrors('email');
+
+        $this->assertGuest();
     }
 }
