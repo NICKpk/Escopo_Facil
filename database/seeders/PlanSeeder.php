@@ -12,7 +12,7 @@ class PlanSeeder extends Seeder
      */
     public function run(): void
     {
-        Plan::create([
+        Plan::firstOrCreate(['slug' => 'free'], [
             'name' => 'Plano Free',
             'slug' => 'free',
             'description' => 'Ideal para estudantes e testes individuais.',
@@ -21,16 +21,16 @@ class PlanSeeder extends Seeder
             'limits' => json_encode(['projects' => 3, 'members' => 1]),
         ]);
 
-        Plan::create([
+        Plan::firstOrCreate(['slug' => 'pro'], [
             'name' => 'Escopo Pro',
             'slug' => 'pro',
             'description' => 'Focado em prioridades, prazos e gestão avançada.',
-            'price_monthly' => 19.90,
-            'price_yearly' => 199.00,
+            'price_monthly' => 27.90,
+            'price_yearly' => 238.80,
             'limits' => json_encode(['projects' => 15, 'members' => 5]),
         ]);
 
-        Plan::create([
+        Plan::firstOrCreate(['slug' => 'equipe'], [
             'name' => 'Escopo Equipe',
             'slug' => 'equipe',
             'description' => 'Permissões avançadas, suporte e histórico completo para times.',

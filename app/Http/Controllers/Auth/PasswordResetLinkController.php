@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\AuthModal;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -14,9 +16,9 @@ class PasswordResetLinkController extends Controller
     /**
      * Display the password reset link request view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.forgot-password');
+        return AuthModal::view($request, 'forgot-password');
     }
 
     /**
@@ -24,22 +26,24 @@ class PasswordResetLinkController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
+        if (is_string($request->input('email'))) {
+            $request->merge(['email' => mb_strtolower(trim($request->input('email')))]);
+        }
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string', 'email', 'max:255'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
+        Password::sendResetLink(
             $request->only('email')
         );
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        // The same response for unknown addresses prevents account enumeration.
+        if ($request->expectsJson()) {
+            return AuthModal::json($request, 'reset-link-sent', 'Se o e-mail estiver cadastrado, você receberá as instruções para redefinir sua senha.');
+        }
+
+        return back()->with('status', __('passwords.sent'));
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\AuthModal;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request): View
     {
-        return view('auth.reset-password', ['request' => $request]);
+        return AuthModal::view($request, 'reset-password', ['authToken' => $request->route('token')]);
     }
 
     /**
@@ -29,12 +31,12 @@ class NewPasswordController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'token' => ['required', 'string'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -55,6 +57,14 @@ class NewPasswordController extends Controller
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
+        if ($request->expectsJson()) {
+            if ($status !== Password::PASSWORD_RESET) {
+                throw ValidationException::withMessages(['email' => __($status)]);
+            }
+
+            return AuthModal::json($request, 'password-reset', 'Sua senha foi alterada. Entre com a nova senha.');
+        }
+
         return $status == Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : back()->withInput($request->only('email'))

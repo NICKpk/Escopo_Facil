@@ -15,6 +15,7 @@ document.addEventListener('keydown', event => {
 document.querySelectorAll('[data-period]').forEach(button => {
     button.addEventListener('click', () => {
         const period = button.dataset.period;
+        document.querySelectorAll('[data-checkout-link]').forEach(link => { const url = new URL(link.href); url.searchParams.set('period', period); link.href = url.href; });
         document.querySelectorAll('[data-period]').forEach(option => option.setAttribute('aria-pressed', String(option === button)));
         document.querySelectorAll('[data-yearly]').forEach(price => { price.textContent = `R$ ${price.dataset[period]}`; });
         document.querySelectorAll('[data-price-period]').forEach(label => { label.textContent = period === 'yearly' ? '/ano' : '/mês'; });
@@ -50,7 +51,7 @@ function animateWheelScroll(time) {
     wheelFrame = window.requestAnimationFrame(animateWheelScroll);
 }
 window.addEventListener('wheel', event => {
-    if (document.querySelector('#login-modal[open]')) { stopWheelScroll(); return; }
+    if (document.querySelector('#login-modal[open], #checkout-modal[open], #legal-modal[open]')) { stopWheelScroll(); return; }
     if (event.ctrlKey || event.metaKey || event.shiftKey ||
         !event.cancelable || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) {
         stopWheelScroll();

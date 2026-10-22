@@ -2,14 +2,21 @@
 <html lang="pt-BR" data-motion="full">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>Escopo Fácil — Organize seus projetos e tarefas</title>
 <meta name="description" content="Organize projetos, tarefas e equipes com o Escopo Fácil. Do primeiro quadro à entrega final, tudo no lugar.">
 <link rel="preload" href="{{ asset('assets/landing/open-runde-regular.woff2') }}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{{ asset('assets/landing/open-runde-semibold.woff2') }}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{{ asset('assets/landing/landing.css') . '?v=' . filemtime(public_path('assets/landing/landing.css')) }}"><script src="{{ asset('assets/landing/landing.js') . '?v=' . filemtime(public_path('assets/landing/landing.js')) }}" defer></script>
 <link rel="stylesheet" href="{{ asset('assets/landing/login-modal.css') . '?v=' . filemtime(public_path('assets/landing/login-modal.css')) }}">
+<link rel="stylesheet" href="{{ asset('assets/landing/checkout-modal.css') . '?v=' . filemtime(public_path('assets/landing/checkout-modal.css')) }}">
+<link rel="stylesheet" href="{{ asset('assets/landing/legal.css') . '?v=' . filemtime(public_path('assets/landing/legal.css')) }}">
+<script src="{{ asset('assets/landing/legal.js') . '?v=' . filemtime(public_path('assets/landing/legal.js')) }}" defer></script>
+<link rel="stylesheet" href="{{ asset('assets/system/entry.css') . '?v=' . filemtime(public_path('assets/system/entry.css')) }}">
+<script src="{{ asset('assets/system/entry.js') . '?v=' . filemtime(public_path('assets/system/entry.js')) }}" defer></script>
 <script src="{{ asset('assets/landing/login-modal.js') . '?v=' . filemtime(public_path('assets/landing/login-modal.js')) }}" defer></script>
 @vite('resources/js/landing.jsx')
+@vite('resources/js/checkout.js')
 </head>
 <body>
 @php($startUrl = auth()->check() ? route('dashboard') : route('register'))
@@ -28,7 +35,7 @@
     <p class="plan-label">7 dias grátis</p><h3>Free</h3>
     <p class="plan-description">Para projetos pequenos</p>
     <ul><li>Projetos ilimitados</li><li>Tarefas por status</li><li>Membros do projeto</li><li>Busca de tarefas</li><li>Painel web</li></ul>
-    <a class="button soft" href="{{ $startUrl }}">Try Freelio free</a>
+    <a class="button soft" href="{{ $startUrl }}">Realizar teste grátis</a>
 </article>
 <article class="plan featured">
     <div class="billing-switch" role="group" aria-label="Período de cobrança"><button type="button" data-period="yearly" aria-pressed="true">Anual</button><button type="button" data-period="monthly" aria-pressed="false">Mensal</button></div>
@@ -36,13 +43,13 @@
     <h3 class="price"><span data-yearly="19,90" data-monthly="27,90">R$ 19,90</span></h3>
     <p class="plan-description">Para equipes que precisam de<br class="plan-break"> mais controle.</p>
     <ul><li>Tudo do Básico</li><li>Prioridades e prazos</li><li>Gestão de membros</li><li>Controle por projeto</li><li>Relatórios simples</li></ul>
-    <a class="button" href="{{ $startUrl }}">Começar agora</a>
+    <a class="button" data-checkout-link href="{{ route('subscription.start', ['period' => 'yearly']) }}">Comprar agora</a>
 </article>
 <article class="plan">
     <p class="plan-label">Escopo Equipe</p><h3>Flexível</h3>
     <p class="plan-description">Para grupos maiores e projetos</p>
     <ul><li>Tudo do Pro</li><li>Permissões por função</li><li>Suporte à equipe</li><li>Histórico de tarefas</li><li>Acompanhamento completo</li></ul>
-    <button class="button soft" type="button" disabled>Falar com equipe</button>
+    <a class="button soft" data-login-trigger aria-haspopup="dialog" aria-controls="login-modal" href="{{ route('login') }}">Comprar agora</a>
 </article>
 </div><p class="plan-note" role="status" aria-live="polite">Exibindo valores anuais.</p></section>
 <footer id="contato">
@@ -55,15 +62,19 @@
                     <button type="button" disabled aria-label="LinkedIn — em breve"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M8 10v7m0-10v1m4 9v-7m0 3c0-4 5-4 5 0v4" stroke="currentColor" stroke-width="1.5"/></svg></button>
                     <button type="button" disabled aria-label="X — em breve"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M5 4h4l10 16h-4L5 4Zm0 16L19 4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
                 </div>
+                <a class="lgpd-badge" href="{{ route('legal.privacy') }}" data-legal-document aria-label="LGPD — consultar o Aviso de Privacidade"><img src="{{ asset('assets/landing/lgpd-informativo.svg') }}" alt="LGPD — Privacidade e dados" width="182" height="56"></a>
             </div>
             <div class="footer-links">
                 <nav aria-label="Páginas do rodapé"><h2>Páginas</h2><a href="{{ url('/') }}">Home</a><a href="#features">Funcionalidades</a><a href="#precos">Planos</a><span aria-disabled="true">Blog</span></nav>
-                <nav aria-label="Informações do rodapé"><h2>Informações</h2><span aria-disabled="true">Contato</span><span aria-disabled="true">Privacidade</span><span aria-disabled="true">Termos de uso</span><span aria-disabled="true">404</span></nav>
+                <nav aria-label="Informações do rodapé"><h2>Informações</h2><a href="{{ route('legal.privacy') }}" data-legal-document>Contato</a><a href="{{ route('legal.privacy') }}" data-legal-document>Privacidade</a><a href="{{ route('legal.terms') }}" data-legal-document>Termos de uso</a><span aria-disabled="true">404</span></nav>
             </div>
         </div>
         <div class="footer-bottom"><span>© 2025. Criado por Natan Oliveira</span><span>Escopo fácil</span></div>
     </div>
 </footer>
 </div>
-<x-login-modal />
+<x-login-modal :auth-screen="$authScreen ?? null" :auth-email="$authEmail ?? null" :auth-token="$authToken ?? null" />
+<x-checkout-modal :initial-period="$checkoutPeriod ?? 'yearly'" :initial-open="$checkoutOpen ?? false" />
+<x-system-entry />
+<x-legal-modal />
 </body></html>

@@ -8,6 +8,30 @@ const imageSpring = { type: 'spring', stiffness: 150, damping: 37, mass: 1, rest
 const entranceSpring = { type: 'spring', stiffness: 150, damping: 30, mass: 1 };
 const slideSpring = { type: 'spring', bounce: 0, duration: .6 };
 
+function ScrollClouds({ selector, offset }) {
+    const section = useRef(document.querySelector(selector));
+    const { scrollYProgress } = useScroll({ target: section, offset });
+    const position = useSpring(scrollYProgress, imageSpring);
+
+    function paint(value) {
+        // Each cloud exits through its own edge and retraces its path on scroll up.
+        // Percentages keep the travel proportional to its responsive image size.
+        const progress = Math.max(0, Math.min(1, value / .75));
+        section.current.querySelectorAll(':scope > .cloud').forEach(cloud => {
+            const direction = cloud.classList.contains('left') ? -1 : 1;
+            cloud.style.transform = `translate3d(${direction * progress * 110}%, ${-16 * progress}px, 0)`;
+        });
+    }
+
+    useMotionValueEvent(position, 'change', paint);
+    useEffect(() => {
+        paint(position.get());
+        return () => section.current.querySelectorAll(':scope > .cloud').forEach(cloud => cloud.style.removeProperty('transform'));
+    }, []);
+
+    return null;
+}
+
 function HeroWords({ lines, delay = 0 }) {
     const reduced = false;
     let index = 0;
@@ -99,6 +123,8 @@ function LandingMotion({ host, mobileImage, webImage }) {
 
     const transition = reduced ? { duration: 0 } : slideSpring;
     return <>
+        <ScrollClouds selector=".hero" offset={['start start', 'center start']} />
+        <ScrollClouds selector=".pricing" offset={['start center', 'center start']} />
         <motion.div className="device-images" style={{ scale: reduced ? 1 : imageScale }}>
             <motion.img className="mobile-photo device-photo" src={mobileImage} alt="Escopo Fácil no celular" width="1417" height="941" initial={false} animate={{ x: device === 'mobile' ? '0%' : '-100%' }} transition={transition} aria-hidden={device !== 'mobile'} />
             <motion.img className="web-photo device-photo" src={webImage} alt="Escopo Fácil no tablet" width="1672" height="941" initial={false} animate={{ x: device === 'web' ? '0%' : '100%' }} transition={transition} aria-hidden={device !== 'web'} />

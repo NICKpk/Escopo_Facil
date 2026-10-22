@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 56" role="img" aria-labelledby="title">
+  <title id="title">LGPD — Privacidade e dados</title>
+  <g fill="none" stroke="#8b0836" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 5 7 12v13c0 12 8 20 17 25 9-5 17-13 17-25V12L24 5Z"/>
+    <rect x="16" y="23" width="16" height="13" rx="3"/>
+    <path d="M19 23v-5a5 5 0 0 1 10 0v5m-5 5v3"/>
+  </g>
+  <g fill="#8b0836" font-family="Arial,Helvetica,sans-serif">
+    <text x="53" y="28" font-size="23" font-weight="700" letter-spacing="1.4">LGPD</text>
+    <text x="54" y="43" font-size="10.5">Privacidade e dados</text>
+  </g>
+</svg>

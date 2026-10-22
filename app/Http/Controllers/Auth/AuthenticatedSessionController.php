@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\AuthModal;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,9 +16,9 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        return AuthModal::view($request, 'login');
     }
 
     /**
@@ -29,10 +30,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (! $request->user()->hasVerifiedEmail()) {
+            $intendedPath = parse_url($request->session()->get('url.intended', ''), PHP_URL_PATH) ?? '';
+            if (! str_starts_with($intendedPath, '/verify-email/')) {
+                return $request->expectsJson()
+                    ? AuthModal::json($request, 'verify-email', 'Confirme seu e-mail para acessar o sistema.')
+                    : redirect()->route('verification.notice');
+            }
+        }
+
         $redirect = redirect()->intended(route('dashboard', absolute: false));
 
         if ($request->expectsJson()) {
-            return response()->json(['redirect' => $redirect->getTargetUrl()]);
+            return response()->json(['redirect' => $redirect->getTargetUrl(), 'csrf' => $request->session()->token(), 'authenticated' => true, 'verified' => $request->user()->hasVerifiedEmail()]);
         }
 
         return $redirect;
@@ -41,7 +51,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|JsonResponse
     {
         Auth::guard('web')->logout();
 
@@ -49,6 +59,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return $request->expectsJson()
+            ? AuthModal::json($request, 'login', 'Você saiu da sua conta.')
+            : redirect('/');
     }
 }

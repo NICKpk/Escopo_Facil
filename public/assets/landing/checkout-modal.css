@@ -1,0 +1,60 @@
+.checkout-modal{width:min(620px,calc(100% - 32px));border-radius:28px;background:#fff;color:#141c2c;max-height:calc(100dvh - 40px);overscroll-behavior:contain}
+.checkout-modal::backdrop{background:rgba(20,29,46,.5);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+html.checkout-modal-open,html.checkout-modal-open body{overflow:hidden}
+.checkout-modal [hidden]{display:none!important}
+.checkout-modal .login-modal-content{padding:50px 50px 40px}
+.checkout-modal .login-modal-logo{display:block;width:250px;height:auto;margin:0 0 26px}
+.checkout-modal .login-modal-close{z-index:1}
+.checkout-modal .checkout-simulation-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:7px;color:#8b6b3e;background:#fbf5ec;font-size:11px;line-height:1.4;font-weight:600;margin-bottom:18px}
+.checkout-modal .checkout-simulation-badge>span{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.checkout-modal .checkout-order{padding:20px 22px;border:1px solid #ece8eb;border-radius:14px;background:linear-gradient(135deg,#fbf8f6,#f6f9fc);margin:0 0 26px}
+.checkout-modal .checkout-order-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.checkout-modal .checkout-plan-name{font-size:16px;white-space:nowrap;letter-spacing:-.02em;color:#586072}
+.checkout-modal .checkout-plan-name strong{color:#8b0836;font-weight:600}
+.checkout-modal .checkout-periods{display:flex;align-items:center;gap:3px;padding:4px;border-radius:30px;background:#eeebea}
+.checkout-modal .checkout-periods button{border:0;border-radius:24px;background:transparent;color:#6b6a70;font:600 12px/18px 'Open Runde',system-ui,sans-serif;padding:7px 15px;cursor:pointer;transition:background .2s,color .2s,box-shadow .2s}
+.checkout-modal .checkout-periods button[aria-pressed=true]{background:#fff;color:#8b0836;box-shadow:0 2px 6px #35212408}
+.checkout-modal .checkout-order-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.checkout-modal .checkout-order-total>span{font-size:13px;color:#73839e}
+.checkout-modal .checkout-order-total>strong{font-size:30px;line-height:1.2;letter-spacing:-.045em;font-weight:600;color:#141c2c;white-space:nowrap}
+.checkout-modal .checkout-order-term,.checkout-modal .checkout-renewal{margin:8px 0 0;color:#73839e;font-size:12px;line-height:1.5}
+.checkout-modal .checkout-renewal{margin-top:2px}
+.checkout-modal .checkout-account{overflow-wrap:anywhere;margin:13px 0 0;padding-top:12px;border-top:1px solid #e8e5e6;color:#73839e;font-size:12px;line-height:1.5}
+.checkout-modal h2{font-size:30px;line-height:1.2;letter-spacing:-.035em;font-weight:600;margin:0 0 12px}
+.checkout-modal .checkout-description{font-size:14px;line-height:1.6;color:#73839e;margin:0 0 24px;font-weight:400}
+.checkout-modal .primary,.checkout-modal .secondary{display:block;width:100%;min-height:50px;border:0;border-radius:8px;padding:14px 16px;font:600 14px/22px 'Open Runde',system-ui,sans-serif;text-align:center;cursor:pointer;transition:background .2s,transform .2s,color .2s;text-decoration:none}
+.checkout-modal .primary{background:#8b0836;color:#fff}
+.checkout-modal .primary:hover{background:#70062b}
+.checkout-modal .secondary{color:#8b0836;background:#f6f3f4;margin-top:10px}
+.checkout-modal .secondary:hover{background:#eee8eb}
+.checkout-modal .primary:active,.checkout-modal .secondary:active{transform:translateY(1px)}
+.checkout-modal button:disabled{opacity:.6;cursor:wait}
+.checkout-modal button:focus-visible,.checkout-modal a:focus-visible,.checkout-modal input:focus-visible{outline:3px solid #80b9f3;outline-offset:3px}
+.checkout-modal h2:focus,.checkout-modal .checkout-feedback:focus{outline:none}
+.checkout-modal .checkout-note{font-size:11px;line-height:1.6;color:#8792a6;text-align:center;margin:16px 2px 0}
+.checkout-modal .checkout-feedback{padding:12px 14px;margin:0 0 20px;border-radius:8px;background:#fff1f2;color:#9f1239;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.checkout-modal .checkout-feedback:empty{display:none}
+.checkout-modal .checkout-qr-wrap{width:204px;height:204px;padding:10px;background:#fff;border:1px solid #e9e9ef;border-radius:14px;margin:18px auto 12px}
+.checkout-modal .checkout-qr-wrap canvas{display:block;width:100%!important;height:100%!important;image-rendering:pixelated}
+.checkout-modal .checkout-countdown{margin:0 0 22px;text-align:center;font-size:12px;line-height:1.5;color:#73839e}
+.checkout-modal .checkout-countdown strong{color:#141c2c;font-weight:600;font-variant-numeric:tabular-nums}
+.checkout-modal .checkout-copy-label{display:block;margin:0 0 8px;font-size:12px;color:#65718b}
+.checkout-modal .checkout-copy-row{display:flex;gap:8px;align-items:stretch}
+.checkout-modal .checkout-copy-code{display:block;min-width:0;flex:1;border:1px solid #e9e7ea;background:#f9f9f9;border-radius:8px;padding:12px;font:400 12px/20px 'Open Runde',system-ui,sans-serif;color:#73839e;text-overflow:ellipsis}
+.checkout-modal .checkout-copy-row .secondary{width:auto;margin:0;min-height:46px;padding:11px 13px;white-space:nowrap;font-size:12px}
+.checkout-modal .checkout-payment-status{display:flex;justify-content:center;align-items:center;gap:7px;font-size:11px;line-height:1.5;color:#8b6b3e;margin:18px 0}
+.checkout-modal .checkout-payment-status>span{width:6px;height:6px;background:#c4a45f;border-radius:50%;flex-shrink:0;animation:checkout-pulse 1.8s ease-in-out infinite}
+.checkout-modal .checkout-complete{text-align:center;padding:6px 0 0}
+.checkout-modal .checkout-state-icon{width:60px;height:60px;display:grid;place-items:center;border-radius:50%;margin:0 auto 20px}
+.checkout-modal .checkout-state-icon svg{width:32px;height:32px}
+.checkout-modal .checkout-paid-icon{background:#eaf6ef;color:#37946c}
+.checkout-modal .checkout-expired-icon{background:#fbf4e9;color:#b18643}
+.checkout-modal .checkout-loading{padding:20px 0;text-align:center;color:#73839e;font-size:13px;line-height:1.5}
+.checkout-modal .checkout-loading p{margin:14px 0 0}
+.checkout-modal .checkout-spinner{display:block;width:28px;height:28px;margin:0 auto;border:2px solid #eadce1;border-top-color:#8b0836;border-radius:50%;animation:checkout-spin .8s linear infinite}
+.checkout-modal section:not([hidden]){animation:checkout-appear .2s ease-out both}
+@keyframes checkout-spin{to{transform:rotate(360deg)}}
+@keyframes checkout-pulse{50%{opacity:.35}}
+@keyframes checkout-appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.checkout-modal{border-radius:22px;max-height:calc(100dvh - 24px)}.checkout-modal .login-modal-content{padding:38px 18px 22px}.checkout-modal .login-modal-logo{width:210px;margin-bottom:24px}.checkout-modal h2{font-size:27px}.checkout-modal .checkout-order{padding:17px 16px;margin-bottom:22px}.checkout-modal .checkout-order-top{gap:10px;margin-bottom:18px}.checkout-modal .checkout-periods button{padding:6px 11px}.checkout-modal .checkout-plan-name{font-size:15px}.checkout-modal .checkout-order-total>strong{font-size:28px}.checkout-modal .checkout-copy-row{gap:6px}.checkout-modal .checkout-copy-row .secondary{padding-right:10px;padding-left:10px}.checkout-modal .checkout-payment-status{font-size:10px}.checkout-modal .checkout-description{font-size:13px}}
+@media(max-width:360px){.checkout-modal .login-modal-content{padding-right:12px;padding-left:12px}.checkout-modal .checkout-order-top{align-items:flex-start;flex-direction:column}.checkout-modal .checkout-copy-row{flex-direction:column}.checkout-modal .checkout-copy-row .secondary{width:100%}}

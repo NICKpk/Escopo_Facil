@@ -3,56 +3,64 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\User;
+use App\Support\AuthModal;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        return AuthModal::view($request, 'register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
-        // [GUIA - LÓGICA DE PLANO]:
-        // Aqui podes capturar o request('plan') para associar automaticamente o novo utilizador
-         // ao plano correspondente logo no momento do registo.
-        $request->validate([
+        if (is_string($request->input('email'))) {
+            $request->merge(['email' => mb_strtolower(trim($request->input('email')))]);
+        }
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
+            'job_role' => ['required', Rule::in(['dev-frontend', 'dev-backend', 'dev-fullstack', 'ui-ux-designer', 'product-owner', 'scrum-master', 'tech-lead', 'qa-testes'])],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+            'terms' => ['accepted'],
+            'terms_version' => ['required', 'string', 'max:32', Rule::in([config('legal.version')])],
+            'privacy_notice_version' => ['required', 'string', 'max:32', Rule::in([config('legal.version')])],
+        ], [
+            'terms_version.required' => 'Atualize a página para consultar a versão atual dos Termos de Uso.',
+            'terms_version.in' => 'Os Termos de Uso foram atualizados. Atualize a página e consulte a nova versão antes de continuar.',
+            'privacy_notice_version.required' => 'Atualize a página para consultar o Aviso de Privacidade.',
+            'privacy_notice_version.in' => 'O Aviso de Privacidade foi atualizado. Atualize a página e consulte a nova versão antes de continuar.',
         ]);
 
-        // Procura o plano gratuito na base de dados e associar ao novo utilizador
-        $freePlan = \App\Models\Plan::where('price', 0)->first();
-
+        $freePlan = Plan::where('price_monthly', 0)->where('price_yearly', 0)->first();
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'plan_id' => $freePlan ? $freePlan->id : 1,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'job_role' => $validated['job_role'],
+            'terms_accepted_at' => now(),
+            'terms_version' => config('legal.version'),
+            'privacy_notice_version' => config('legal.version'),
+            'plan_id' => $freePlan?->id,
         ]);
-
-        event(new Registered($user));
 
         Auth::login($user);
+        $request->session()->regenerate();
+        // The model sends the branded verification notification through Laravel.
+        event(new Registered($user));
 
-        return redirect(route('dashboard', absolute: false));
+        return $request->expectsJson()
+            ? AuthModal::json($request, 'verify-email', 'Conta criada! Confirme seu e-mail para continuar.')
+            : redirect()->route('verification.notice');
     }
 }

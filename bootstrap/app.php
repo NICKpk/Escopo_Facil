@@ -16,5 +16,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $invalidVerification = fn ($exception, \Illuminate\Http\Request $request) => $request->routeIs('verification.verify')
+            ? response()->view('welcome', ['authScreen' => 'verification-invalid'], 403)
+            : null;
+        $exceptions->render(fn (\Illuminate\Routing\Exceptions\InvalidSignatureException $exception, \Illuminate\Http\Request $request) => $invalidVerification($exception, $request));
+        $exceptions->render(fn (\Illuminate\Auth\Access\AuthorizationException $exception, \Illuminate\Http\Request $request) => $invalidVerification($exception, $request));
+        $exceptions->render(function (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $exception, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() && $request->is('register', 'forgot-password', 'email/verification-notification')) {
+                return response()->json([
+                    'message' => 'Não foi possível enviar o e-mail agora.',
+                    'csrf' => $request->session()->token(),
+                    'authenticated' => $request->user() !== null,
+                    'verified' => $request->user()?->hasVerifiedEmail() ?? false,
+                    'email' => $request->user()?->email,
+                ], 503);
+            }
+        });
     })->create();
