@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LegalDocumentController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Plan;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
@@ -13,6 +14,7 @@ Route::get('/', function () {
 });
 
 Route::get('/plans', [PlanController::class, 'index']);
+Route::post('/contato', [ContactController::class, 'send'])->middleware('throttle:5,1')->name('contact.send');
 Route::get('/termos-de-uso/{version?}', [LegalDocumentController::class, 'terms'])->name('legal.terms');
 Route::get('/privacidade/{version?}', [LegalDocumentController::class, 'privacy'])->name('legal.privacy');
 Route::get('/assinar/pro', [SubscriptionController::class, 'start'])->name('subscription.start');

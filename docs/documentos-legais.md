@@ -6,7 +6,7 @@ Os links do footer, o símbolo LGPD e os documentos do cadastro abrem um leitor 
 
 ## Identificação
 
-Responsáveis: Guilherme Augusto Tavares Cavalcante e Nicollas Ferreira. Instituição: Centro Universitário Senac, curso Tecnologia em Sistemas para Internet. Contatos informados pelo responsável pelo projeto: Guilherme.tavares.cavalcante@gmail.com e Ramosnicollas99@gmail.com.
+Responsáveis: Guilherme Augusto Tavares Cavalcante e Nicollas Ferreira. Instituição: Centro Universitário Senac, curso Tecnologia em Sistemas para Internet. Contato exibido nos documentos: Suporte@escopofacil.com.br (`legal.support_email`).
 
 Essas informações ficam em `config/legal.php` e podem ser configuradas com `LEGAL_RESPONSIBLE`, `LEGAL_INSTITUTION` e `LEGAL_CONTACT_EMAILS` (separados por vírgula). Não há data de encerramento definida: o aviso descreve critérios de conservação, revisão e exclusão, sem prometer eliminação automática. `LEGAL_RETENTION_END` permite informar uma data posteriormente; uma mudança de política deve gerar nova versão do documento e comunicação aos participantes.
 

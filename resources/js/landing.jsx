@@ -47,6 +47,60 @@ function HeroWords({ lines, delay = 0 }) {
     </React.Fragment>);
 }
 
+// Keep layout measurements independent of the transforms applied to each target.
+function ScrollSectionElement({ element }) {
+    const target = useRef(element);
+    const { scrollYProgress } = useScroll({ target, offset: ['start end', 'end end'] });
+    const progress = useSpring(scrollYProgress, imageSpring);
+    const paint = value => {
+        const p = Math.max(0, Math.min(1, value));
+        // The group settles before its bottom reaches the viewport bottom.
+        const reveal = Math.min(1, p / .45);
+        const focused = element.contains(document.activeElement);
+        element.style.opacity = focused ? '1' : String(Math.min(1, p / .3));
+        element.style.transform = `translate3d(0, ${focused ? 0 : 64 * (1 - reveal)}px, 0)`;
+    };
+    useMotionValueEvent(progress, 'change', paint);
+    useEffect(() => {
+        paint(progress.get());
+        const focus = () => paint(progress.get());
+        element.addEventListener('focusin', focus);
+        return () => {
+            element.removeEventListener('focusin', focus);
+            element.style.removeProperty('opacity');
+            element.style.removeProperty('transform');
+        };
+    }, []);
+    return null;
+}
+
+function SectionReveals() {
+    const [groups] = useState(() => [...document.querySelectorAll('.feature-row, .resources-section > .eyebrow, .resources-section > h2, .resource-card, .resource-highlights > article, .contact-section > .eyebrow, .contact-section > h2, .contact-description, .contact-form, .contact-support-copy, .contact-support-visual')]);
+    const [illustrations] = useState(() => [...document.querySelectorAll('.feature-visual')]);
+    return <>
+        {groups.map((element, index) => <ScrollSectionElement key={`group-${index}`} element={element} />)}
+        {illustrations.map((element, index) => <ScrollIllustration key={`image-${index}`} element={element} />)}
+    </>;
+}
+
+function ScrollIllustration({ element }) {
+    // Track the frame; moving the image must not change the scroll target bounds.
+    const target = useRef(element);
+    const { scrollYProgress } = useScroll({ target, offset: ['start end', 'end end'] });
+    const progress = useSpring(scrollYProgress, imageSpring);
+    const image = element.querySelector('img');
+    const paint = value => {
+        const p = Math.max(0, Math.min(1, value));
+        image.style.transform = `translate3d(0, ${60 * (1 - p)}px, 0)`;
+    };
+    useMotionValueEvent(progress, 'change', paint);
+    useEffect(() => {
+        paint(progress.get());
+        return () => image.style.removeProperty('transform');
+    }, []);
+    return null;
+}
+
 function LandingMotion({ host, mobileImage, webImage }) {
     const reduced = false;
     const [device, setDevice] = useState('mobile');
@@ -123,6 +177,7 @@ function LandingMotion({ host, mobileImage, webImage }) {
 
     const transition = reduced ? { duration: 0 } : slideSpring;
     return <>
+        <SectionReveals />
         <ScrollClouds selector=".hero" offset={['start start', 'center start']} />
         <ScrollClouds selector=".pricing" offset={['start center', 'center start']} />
         <motion.div className="device-images" style={{ scale: reduced ? 1 : imageScale }}>
